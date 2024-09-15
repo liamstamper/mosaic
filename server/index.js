@@ -14,6 +14,9 @@ import { verifyToken } from "./middleware/auth.js";
 import userRoutes from "./routes/users.js";
 import postRoutes from "./routes/posts.js";
 import { createPost } from "./controllers/posts.js";
+import User from "./models/User.js";
+import Post from "./models/Post.js";
+import { users, posts } from "./data/index.js";
 
 // Configs
 const __filename = fileURLToPath(import.meta.url);
@@ -31,18 +34,18 @@ app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 // File Storage
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "public/assets");
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    },
+  destination: function (req, file, cb) {
+    cb(null, "public/assets");
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
 });
 const upload = multer({ storage });
 
 // User Routes
 app.use("/auth", authRoutes);
-app.use("/users", userRoutes)
+app.use("/users", userRoutes);
 
 // Routes with files
 app.post("/auth/register", upload.single("picture"), register);
@@ -56,10 +59,10 @@ app.use("/posts", verifyToken, postRoutes);
 // Mongoose setup
 const PORT = process.env.PORT || 3001;
 mongoose
-    .connect(process.env.MONGO_URL)
-    .then(() => {
-        app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
-    })
-    .catch((error) => {
-        console.error(`Connection error: ${error.message}`);
-    });
+  .connect(process.env.MONGO_URL)
+  .then(() => {
+    app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
+  })
+  .catch((error) => {
+    console.error(`Connection error: ${error.message}`);
+  });
